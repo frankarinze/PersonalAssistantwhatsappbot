@@ -1,0 +1,8 @@
+{
+  "name": "component-naming",
+  "description": "Enforces consistent React component naming conventions",
+  "pattern": "function\\s+([A-Z][a-zA-Z0-9]*)\\s*\\(|const\\s+([A-Z][a-zA-Z0-9]*)\\s*=",
+  "message": "React components should be named using PascalCase",
+  "severity": "warning",
+  "enabled": true
+} 

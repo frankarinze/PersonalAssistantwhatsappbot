@@ -1,0 +1,171 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Rule Name: image_guidelines
+Description: Guidelines for image usage, sources, and implementation in the AnkaraGrid project.
+
+# Image Guidelines for AnkaraGrid
+
+## Image Sources
+Primary source for all images: [Pexels](mdc:https:/www.pexels.com)
+
+## Image Categories
+
+### Nigerian Bespoke Dresses
+Search terms to use on Pexels:
+- "African fashion"
+- "Ankara dress"
+- "Nigerian traditional dress"
+- "African print dress"
+- "African wedding dress"
+- "Nigerian fashion"
+
+Recommended photographers on Pexels:
+- Tubaphones Photography
+- Emmanuel Oyeleke
+- Godisable Jacob
+- Nappy
+
+### Image Requirements
+
+#### Quality Standards
+- Minimum resolution: 1200x800 pixels
+- Preferred aspect ratios:
+  - Hero images: 16:9 or 3:2
+  - Gallery images: 1:1 or 4:3
+  - Designer profiles: 3:4 portrait
+- File format: JPG or WebP
+- Max file size: 500KB (compressed)
+
+#### Style Guidelines
+1. Fashion Focus:
+   - Clear, well-lit shots of dresses
+   - Full-length or three-quarter views
+   - Details of fabric and craftsmanship visible
+   - Professional studio shots or well-composed outdoor photos
+
+2. Cultural Authenticity:
+   - Authentic Nigerian/African prints and patterns
+   - Traditional and modern fusion styles
+   - Appropriate cultural representation
+   - Contemporary African fashion context
+
+3. Categories to Include:
+   - Traditional Ankara dresses
+   - Modern Ankara fusion wear
+   - Bridal and occasion wear
+   - Ready-to-wear collections
+   - Bespoke tailoring examples
+
+#### Image Usage
+
+1. Hero Section:
+```jsx
+// Example image URLs from Pexels
+const heroImages = [
+  'https://images.pexels.com/photos/african-fashion-1',
+  'https://images.pexels.com/photos/ankara-dress-2',
+];
+```
+
+2. Designer Portfolios:
+```jsx
+// Recommended sizes and formats
+const portfolioImage = {
+  thumbnail: '400x400',  // Square for grid
+  detail: '800x1200',    // Portrait for detailed view
+  gallery: '1200x800'    // Landscape for showcase
+};
+```
+
+3. Project Showcases:
+```jsx
+// Image optimization
+const showcaseImage = {
+  desktop: '1200x800',
+  mobile: '600x800',
+  quality: 80,
+  format: 'webp'
+};
+```
+
+## Image Management
+
+### Naming Convention
+```
+category-subcategory-descriptor-size.ext
+```
+Examples:
+- `ankara-dress-blue-floral-lg.jpg`
+- `bespoke-bridal-white-gold-sm.webp`
+- `designer-portfolio-studio-md.jpg`
+
+### Directory Structure
+```
+public/images/
+├── hero/
+├── designers/
+│   ├── portfolios/
+│   └── profiles/
+├── dresses/
+│   ├── traditional/
+│   ├── modern/
+│   └── bridal/
+└── showcase/
+```
+
+## Best Practices
+
+1. Always credit photographers when required by Pexels
+2. Use responsive images with multiple sizes
+3. Implement lazy loading for gallery images
+4. Compress images before upload
+5. Include meaningful alt text for accessibility
+
+## Example Implementation
+
+```tsx
+// Image component with optimization
+const OptimizedImage = ({ src, alt, size }) => {
+  return (
+    <img
+      src={src}
+      alt={alt}
+      loading="lazy"
+      className="object-cover rounded-2xl"
+      sizes={size}
+    />
+  );
+};
+
+// Usage in gallery
+const DressGallery = () => {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      {dresses.map((dress) => (
+        <OptimizedImage
+          key={dress.id}
+          src={dress.imageUrl}
+          alt={dress.description}
+          size="(max-width: 768px) 50vw, 25vw"
+        />
+      ))}
+    </div>
+  );
+};
+```
+
+## Resources
+
+1. Image Optimization Tools:
+   - [Squoosh](mdc:https:/squoosh.app)
+   - [TinyPNG](mdc:https:/tinypng.com)
+   - [ImageOptim](mdc:https:/imageoptim.com)
+
+2. Additional Image Sources:
+   - Pexels Collections:
+     - [African Fashion](mdc:https:/www.pexels.com/search/african%20fashion)
+     - [Nigerian Fashion](mdc:https:/www.pexels.com/search/nigerian%20fashion)
+     - [Ankara Dress](mdc:https:/www.pexels.com/search/ankara%20dress) 

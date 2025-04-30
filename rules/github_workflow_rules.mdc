@@ -1,0 +1,181 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+ # GitHub Workflow Guidelines
+
+## Branch Structure
+- `main`: Production-ready code
+- `main`: Main development branch
+- `staging`: Pre-production testing
+- `feature/*`: Feature development
+- `hotfix/*`: Emergency fixes
+- `release/*`: Release preparation
+
+## Branch Naming Convention
+1. Feature Branches:
+   ```
+   feature/YYYYMMDD-description-RANDOM
+   ```
+   Example: feature/20240420-navbar-redesign-a1b2c3
+
+2. Hotfix Branches:
+   ```
+   hotfix/YYYYMMDD-issue-RANDOM
+   ```
+   Example: hotfix/20240420-login-fix-d4e5f6
+
+3. Release Branches:
+   ```
+   release/vX.Y.Z
+   ```
+   Example: release/v1.2.0
+
+## Development Workflow
+1. Starting New Feature:
+   ```bash
+   git checkout main
+   git pull origin main
+   git checkout -b feature/$(date +%Y%m%d)-${description}-$(openssl rand -hex 4)
+   ```
+
+2. Daily Development:
+   ```bash
+   git pull origin main
+   git add .
+   git commit -m "type: description"
+   git push origin feature/branch-name
+   ```
+
+3. Before Pull Request:
+   ```bash
+   git fetch origin main
+   git rebase origin/main
+   git push origin feature/branch-name -f
+   ```
+
+## Commit Message Format
+```
+type(scope): subject
+
+body
+
+footer
+```
+
+Types:
+- feat: New feature
+- fix: Bug fix
+- docs: Documentation
+- style: Formatting
+- refactor: Code restructuring
+- test: Adding tests
+- chore: Maintenance
+
+Example:
+```
+feat(navbar): add mobile responsive menu
+
+- Implement hamburger menu
+- Add slide animation
+- Update navigation links
+
+Closes #123
+```
+
+## Pull Request Process
+1. Requirements:
+   - Updated branch from main
+   - Passing tests
+   - No conflicts
+   - Component screenshots
+   - Testing notes
+
+2. PR Title Format:
+   ```
+   type: Brief description (#issue)
+   ```
+   Example: "feat: Add mobile navigation (#45)"
+
+3. PR Description Template:
+   ```markdown
+   ## Changes
+   - Detailed list of changes
+
+   ## Screenshots
+   - Before/After images
+
+   ## Testing Notes
+   - Test cases covered
+   - Browser compatibility
+
+   ## Dependencies
+   - List new dependencies
+
+   ## Related Issues
+   - Closes #issue
+   ```
+
+## Review Process
+1. Code Review:
+   - At least 1 approval required
+   - Address all comments
+   - Maintain conversation thread
+
+2. Testing Requirements:
+   - Unit tests pass
+   - E2E tests pass
+   - Mobile responsive
+   - Cross-browser compatible
+   - Performance metrics met
+
+3. Merge Requirements:
+   - CI/CD checks passed
+   - Approved reviews
+   - No conflicts
+   - Up-to-date with base branch
+
+## Deployment Flow
+1. Feature → main:
+   - Automatic deployment to development environment
+   - Integration testing
+
+2. main → staging:
+   - Weekly releases
+   - QA testing
+   - UAT environment
+
+3. staging → main:
+   - Production deployment
+   - Release notes
+   - Version tagging
+
+## Version Control
+- Semantic Versioning (MAJOR.MINOR.PATCH)
+- Tags for releases
+- Changelog updates
+
+## Emergency Hotfix Process
+1. Create hotfix branch from main
+2. Fix and test
+3. PR to main and main
+4. Deploy to production
+5. Backport to main
+
+## Automation Rules
+1. Branch Protection:
+   - No direct pushes to main
+   - Required reviews
+   - Status checks must pass
+
+2. Automated Tasks:
+   - Lint checking
+   - Test running
+   - Build verification
+   - Preview deployments
+
+3. CI/CD Integration:
+   - Automated testing
+   - Preview environments
+   - Deployment pipelines

@@ -1,0 +1,85 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# WhatsApp Meeting Assistant Bot PRD
+
+## Overview
+
+The WhatsApp Meeting Assistant Bot is a streamlined productivity tool that helps users schedule and manage Google Meet appointments through WhatsApp. Powered by DeepSeek's language model, the bot delivers a human-like conversational experience for meeting management directly within WhatsApp.
+
+## Problem Statement
+
+Users need a simple way to check availability and schedule meetings without switching between calendar and messaging apps. Current scheduling processes are time-consuming and often require multiple app transitions.
+
+## Target Users
+
+- Busy professionals who use WhatsApp regularly
+- Small business owners
+- Teams needing quick meeting coordination
+- Individuals who prefer chat-based interactions
+
+## Key Features
+
+### 1. Meeting Creation
+
+- Users can request a meeting setup using natural language
+- Bot creates Google Meet links based on requested date/time
+- Confirmation sent with meeting details and link
+
+### 2. Calendar Integration
+
+- Checks user's Google Calendar for conflicts
+- Alerts users of scheduling overlaps
+- Suggests alternative times when conflicts exist
+
+### 3. User Authentication & Management
+
+- Individual Google account authentication for each unique phone number
+- Secure OAuth flow for first-time users
+- Persistent authentication for returning users
+
+## User Flow
+
+1. **First-Time User Onboarding**
+    - User adds bot contact to WhatsApp
+    - Bot sends welcome message with conversational introduction
+    - Bot explains need for Google account access and sends authentication link
+    - User completes Google OAuth flow via secure link
+    - Bot confirms successful connection and explains capabilities
+2. **Meeting Creation**
+    - User sends natural language request (e.g., "Can you set up a meeting with my team tomorrow afternoon?")
+    - Bot responds conversationally while checking calendar (e.g., "Let me check your availability for tomorrow afternoon")
+    - If time is available, bot creates meeting and responds naturally (e.g., "I've scheduled your team meeting for tomorrow at 3pm. Here's the Google Meet link...")
+    - If conflict exists, bot responds like a helpful assistant (e.g., "I see you already have a budget review scheduled at that time. Would 4:30pm work instead?")
+3. **Meeting Management**
+    - User can ask about upcoming meetings in natural language
+    - Conversational requests for rescheduling or cancellation are supported
+    - Bot maintains context within conversations for follow-up questions
+
+## Technical Requirements
+
+### Integration Points
+
+- WhatsApp Business API for messaging
+- DeepSeek language model for natural language understanding and conversation
+- Google OAuth 2.0 for user authentication
+- Google Calendar API for availability checking
+- Google Meet API for meeting creation
+
+### Core Components
+
+- Message handling system
+- Natural language processing module with conversation memory
+- Calendar management service
+- User authentication and profile service
+- Tone and personality engine for human-like responses
+
+## Authentication Flow
+
+1. New user detection based on phone number
+2. Conversational explanation of Google authentication need
+3. Secure OAuth link generation and delivery via WhatsApp
+4. OAuth callback handling and token storage
+5. Token refresh mechanism for persistent access

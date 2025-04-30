@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  whatsapp:
+    image: docker.whatsapp.biz/whatsapp-business-api:latest
+    container_name: whatsapp
+    restart: always
+    environment:
+      - WA_WEB_PORT=3001
+      - WA_DB_VENDOR=sqlite
+      - WA_DB_PATH=/var/lib/whatsapp/data
+      # Add other required environment variables here (e.g., WA_CERTIFICATE, WA_PRIVATE_KEY if needed)
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./data:/var/lib/whatsapp
+
+  whatsapp-api:
+    image: whatsapp/business-api-client:latest
+    container_name: whatsapp-api
+    volumes:
+      - ./whatsapp/certificates:/certificates
+      - ./whatsapp/config:/config
+    environment:
+      - WHATSAPP_PHONE_NUMBER=${WHATSAPP_PHONE_NUMBER}
+      - WHATSAPP_DISPLAY_NAME=${WHATSAPP_DISPLAY_NAME}
+      - WHATSAPP_CERTIFICATE_PATH=/certificates/certificate.pem
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  whatsapp-admin:
+    build: ./whatsapp-admin
+    container_name: whatsapp-admin
+    environment:
+      - WHATSAPP_API_URL=http://whatsapp-api:8080
+      - WHATSAPP_ACCESS_TOKEN=${WHATSAPP_ACCESS_TOKEN}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - whatsapp-api
+    restart: unless-stopped 

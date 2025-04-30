@@ -1,0 +1,30 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+ # Frontend Development Guidelines
+
+## Code Style
+- Use TypeScript for type safety
+- Follow React best practices
+- Implement component-based architecture
+- Use functional components with hooks
+
+## Styling
+- Use Tailwind CSS utility classes
+- Follow BEM naming convention for custom classes
+- Maintain consistent spacing and typography
+- Implement responsive design principles
+
+## State Management
+- Use [Specify state management solution]
+- Keep state as local as possible
+- Implement proper error handling
+- Use loading states appropriately
+
+## Performance
+- Implement code splitting
+- Optimize images and assets
+- Use proper caching strategies
+- Monitor and optimize bundle size

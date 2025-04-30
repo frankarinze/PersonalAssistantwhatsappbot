@@ -1,0 +1,29 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Technology Stack Documentation
+
+## Frontend
+- React.js
+- TypeScript
+- Tailwind CSS
+- State Management: [Specify]
+
+## Backend
+- Node.js
+- Express.js
+- Database: mysql
+- API: REST
+
+## Development Tools
+- Version Control: Git
+- Package Manager: npm/yarn
+- Build Tools: [Specify]
+- Testing Framework: [Specify]
+
+## Deployment
+- Hosting Platform: [Specify]
+- CI/CD: [Specify]
+- Monitoring: [Specify]

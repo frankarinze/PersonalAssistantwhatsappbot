@@ -1,0 +1,94 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Cursor Project Rules
+
+## AI Assistant Guidelines
+- Use consistent coding patterns
+  - Functional components
+  - TypeScript interfaces
+  - Custom hooks
+  - Proper error handling
+- Follow project-specific conventions
+  - File naming
+  - Component structure
+  - Type definitions
+  - Import order
+- Maintain code quality standards
+  - ESLint rules
+  - Prettier formatting
+  - TypeScript strict mode
+  - Proper documentation
+- Implement proper error handling
+  - Error boundaries
+  - Try-catch blocks
+  - Error logging
+  - User feedback
+
+## Code Generation Rules
+- Generate TypeScript types for all new features
+  - Interface definitions
+  - Type aliases
+  - Generic types
+  - Union types
+- Include proper documentation
+  - JSDoc comments
+  - Component documentation
+  - API documentation
+  - Usage examples
+- Follow component structure guidelines
+  - Atomic design
+  - Proper prop types
+  - Component composition
+  - Clean code principles
+- Implement proper testing
+  - Unit tests
+  - Component tests
+  - Integration tests
+  - E2E tests
+
+## Refactoring Rules
+- Maintain backward compatibility
+  - Deprecation notices
+  - Migration guides
+  - Version updates
+  - Breaking changes
+- Update documentation when refactoring
+  - API changes
+  - Component changes
+  - Type changes
+  - Usage examples
+- Follow the DRY principle
+  - Reusable components
+  - Custom hooks
+  - Utility functions
+  - Shared types
+- Keep functions small and focused
+  - Single responsibility
+  - Pure functions
+  - Proper naming
+  - Clear purpose
+
+## Best Practices
+- Write clean, maintainable code
+  - Proper naming
+  - Clear structure
+  - Consistent style
+  - Good comments
+- Use proper naming conventions
+  - PascalCase for components
+  - camelCase for functions
+  - kebab-case for files
+  - SCREAMING_SNAKE_CASE for constants
+- Implement proper error handling
+  - Error boundaries
+  - Try-catch blocks
+  - Error logging
+  - User feedback
+- Follow security best practices
+  - Input validation
+  - XSS protection
+  - CSRF protection
+  - Secure headers
