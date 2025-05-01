@@ -7,6 +7,7 @@ const auth = require('./auth');
 const session = require('express-session');
 const passport = require('./auth/google');
 const { createGoogleCalendarEventWithMeet } = require('./services/googleService');
+const { sendMessage, replyMessage, sendList, sendReplyButtons } = require('./messages/messageHandlers');
 
 dotenv.config();
 
@@ -132,152 +133,6 @@ app.post('/webhook', async (req, res) => {
   res.status(200).send('Webhook processed')
 })
 
-async function sendMessage(to, body) {
-  await axios({
-    url: `https://graph.facebook.com/v21.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
-    method: 'post',
-    headers: {
-      'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
-      'Content-Type': 'application/json'
-    },
-    data: JSON.stringify({
-      messaging_product: 'whatsapp',
-      to,
-      type: 'text',
-      text: {
-        body
-      }
-    })
-  })
-}
-
-async function replyMessage(to, body, messageId) {
-  await axios({
-    url: `https://graph.facebook.com/v21.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
-    method: 'post',
-    headers: {
-      'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
-      'Content-Type': 'application/json'
-    },
-    data: JSON.stringify({
-      messaging_product: 'whatsapp',
-      to,
-      type: 'text',
-      text: {
-        body
-      },
-      context: {
-        message_id: messageId
-      }
-    })
-  })
-}
-
-async function sendList(to) {
-  await axios({
-    url: `https://graph.facebook.com/v21.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
-    method: 'post',
-    headers: {
-      'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
-      'Content-Type': 'application/json'
-    },
-    data: JSON.stringify({
-      messaging_product: 'whatsapp',
-      to,
-      type: 'interactive',
-      interactive: {
-        type: 'list',
-        header: {
-          type: 'text',
-          text: 'Message Header'
-        },
-        body: {
-          text: 'This is a interactive list message'
-        },
-        footer: {
-          text: 'This is the message footer'
-        },
-        action: {
-          button: 'Tap for the options',
-          sections: [
-            {
-              title: 'First Section',
-              rows: [
-                {
-                  id: 'first_option',
-                  title: 'First option',
-                  description: 'This is the description of the first option'
-                },
-                {
-                  id: 'second_option',
-                  title: 'Second option',
-                  description: 'This is the description of the second option'
-                }
-              ]
-            },
-            {
-              title: 'Second Section',
-              rows: [
-                {
-                  id: 'third_option',
-                  title: 'Third option'
-                }
-              ]
-            }
-          ]
-        }
-      }
-    })
-  })
-}
-
-async function sendReplyButtons(to) {
-  await axios({
-    url: `https://graph.facebook.com/v21.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
-    method: 'post',
-    headers: {
-      'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
-      'Content-Type': 'application/json'
-    },
-    data: JSON.stringify({
-      messaging_product: 'whatsapp',
-      to,
-      type: 'interactive',
-      interactive: {
-        type: 'button',
-        header: {
-          type: 'text',
-          text: 'Message Header'
-        },
-        body: {
-          text: 'This is a interactive reply buttons message'
-        },
-        footer: {
-          text: 'This is the message footer'
-        },
-        action: {
-          buttons: [
-            {
-              type: 'reply',
-              reply: {
-                id: 'first_button',
-                title: 'First Button'
-              }
-            },
-            {
-              type: 'reply',
-              reply: {
-                id: 'second_button',
-                title: 'Second Button'
-              }
-            }
-          ]
-        }
-      }
-    })
-  })
-}
-
 // Example: POST /create-meet-event
 app.post('/create-meet-event', async (req, res) => {
   if (!req.isAuthenticated() || !req.user) {
@@ -303,8 +158,4 @@ app.post('/create-meet-event', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`WhatsApp Meeting Assistant Bot running on port ${PORT}`);
-  // // Notify admin number
-  // sendMessage('2347083609564', '🚀 WhatsApp Meeting Assistant Bot server is running!')
-  //   .then(() => console.log('Startup notification sent!'))
-  //   .catch(err => console.error('Failed to send startup notification:', err.message));
 }); 
