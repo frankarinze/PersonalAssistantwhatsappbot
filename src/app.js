@@ -4,6 +4,9 @@ const dotenv = require('dotenv');
 const nlu = require('./nlu');
 const calendar = require('./calendar');
 const auth = require('./auth');
+const session = require('express-session');
+const passport = require('./auth/google');
+const { createGoogleCalendarEventWithMeet } = require('./services/googleService');
 
 dotenv.config();
 
@@ -12,33 +15,41 @@ app.use(express.json());
 
 const WEBHOOK_VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 const WHATSAPP_ACCESS_TOKEN = process.env.WHATSAPP_TOKEN;
-const WHATSAPP_PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
 
 console.log(WHATSAPP_ACCESS_TOKEN)
 
-const ADMIN_NOTIFY_NUMBER = '2348139094700';
 
-async function notifyAdmin(action, to, details) {
-  const adminMsg = `NOTIFY: Sending ${action} to ${to}\nDetails: ${details}`;
-  await axios({
-    url: `https://graph.facebook.com/v21.0/${WHATSAPP_PHONE_NUMBER_ID}/messages`,
-    method: 'post',
-    headers: {
-      'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
-      'Content-Type': 'application/json'
-    },
-    data: JSON.stringify({
-      messaging_product: 'whatsapp',
-      to: ADMIN_NOTIFY_NUMBER,
-      type: 'text',
-      text: { body: adminMsg }
-    })
+app.use(session({
+  secret: 'your-session-secret',
+  resave: false,
+  saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Google SSO routes
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email', 'https://www.googleapis.com/auth/calendar'] })
+);
+
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/' }),
+  (req, res) => {
+    // Successful authentication
+    res.send('Google authentication successful! You can close this window.');
+  }
+);
+
+app.get('/logout', (req, res) => {
+  req.logout(() => {
+    res.redirect('/');
   });
-}
+});
 
 app.get('/', (req, res) => {
   res.send('Whatsapp with Node.js and Webhooks')
 })
+
 
 app.get('/webhook', (req, res) => {
   const mode = req.query['hub.mode']
@@ -54,6 +65,7 @@ app.get('/webhook', (req, res) => {
 
 app.post('/webhook', async (req, res) => {
   const { entry } = req.body
+  // console.log('checkentry',entry)
 
   if (!entry || entry.length === 0) {
     return res.status(400).send('Invalid Request')
@@ -64,9 +76,10 @@ app.post('/webhook', async (req, res) => {
   if (!changes || changes.length === 0) {
     return res.status(400).send('Invalid Request')
   }
-
+  
   const statuses = changes[0].value.statuses ? changes[0].value.statuses[0] : null
   const messages = changes[0].value.messages ? changes[0].value.messages[0] : null
+  console.log('messages', messages)
 
   if (statuses) {
     // Handle message status
@@ -103,16 +116,25 @@ app.post('/webhook', async (req, res) => {
       }
     }
     
-    console.log(JSON.stringify(messages, null, 2))
+    // Log message details in a readable format
+    console.log('--- Incoming WhatsApp Message ---');
+    // console.log('From:', messages.from);
+    // console.log('Timestamp:', messages.timestamp);
+    if (messages.type === 'text') {
+      console.log('Text:', messages.text.body);
+    } else {
+      console.log('Message Type:', messages.type);
+      console.log('Message Content:', messages[messages.type]);
+    }
+    // console.log('Full message object:', JSON.stringify(messages, null, 2));
   }
   
   res.status(200).send('Webhook processed')
 })
 
 async function sendMessage(to, body) {
-  await notifyAdmin('text message', to, body);
   await axios({
-    url: `https://graph.facebook.com/v21.0/${WHATSAPP_PHONE_NUMBER_ID}/messages`,
+    url: `https://graph.facebook.com/v21.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
     method: 'post',
     headers: {
       'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
@@ -130,9 +152,8 @@ async function sendMessage(to, body) {
 }
 
 async function replyMessage(to, body, messageId) {
-  await notifyAdmin('reply message', to, body);
   await axios({
-    url: `https://graph.facebook.com/v21.0/${WHATSAPP_PHONE_NUMBER_ID}/messages`,
+    url: `https://graph.facebook.com/v21.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
     method: 'post',
     headers: {
       'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
@@ -153,9 +174,8 @@ async function replyMessage(to, body, messageId) {
 }
 
 async function sendList(to) {
-  await notifyAdmin('list message', to, 'Sending interactive list');
   await axios({
-    url: `https://graph.facebook.com/v21.0/${WHATSAPP_PHONE_NUMBER_ID}/messages`,
+    url: `https://graph.facebook.com/v21.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
     method: 'post',
     headers: {
       'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
@@ -212,9 +232,8 @@ async function sendList(to) {
 }
 
 async function sendReplyButtons(to) {
-  await notifyAdmin('reply buttons', to, 'Sending interactive reply buttons');
   await axios({
-    url: `https://graph.facebook.com/v21.0/${WHATSAPP_PHONE_NUMBER_ID}/messages`,
+    url: `https://graph.facebook.com/v21.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
     method: 'post',
     headers: {
       'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
@@ -259,7 +278,33 @@ async function sendReplyButtons(to) {
   })
 }
 
+// Example: POST /create-meet-event
+app.post('/create-meet-event', async (req, res) => {
+  if (!req.isAuthenticated() || !req.user) {
+    return res.status(401).send('Not authenticated');
+  }
+
+  const eventDetails = {
+    summary: req.body.summary || 'Test Meeting',
+    description: req.body.description || 'Created via API',
+    start: req.body.start || new Date(Date.now() + 3600000).toISOString(), // 1 hour from now
+    end: req.body.end || new Date(Date.now() + 7200000).toISOString(),     // 2 hours from now
+    attendees: req.body.attendees || [], // e.g., [{ email: 'someone@gmail.com' }]
+  };
+
+  try {
+    const event = await createGoogleCalendarEventWithMeet(req.user.accessToken, eventDetails);
+    res.json(event);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`WhatsApp Meeting Assistant Bot running on port ${PORT}`);
+  // // Notify admin number
+  // sendMessage('2347083609564', '🚀 WhatsApp Meeting Assistant Bot server is running!')
+  //   .then(() => console.log('Startup notification sent!'))
+  //   .catch(err => console.error('Failed to send startup notification:', err.message));
 }); 
